@@ -14,9 +14,12 @@ public class Snake {
     static ArrayList<PointSnake> points = new ArrayList<>();
 
     static void init() {
-        points.add(new PointSnake(4, 5)); // Head of the snake
+        points.clear();
+        points.add(new PointSnake(4, 5));
         points.add(new PointSnake(3, 5));
-        points.add(new PointSnake(2, 5)); // Tail of the snake
+        points.add(new PointSnake(2, 5));
+        points.add(new PointSnake(1, 5));
+        points.add(new PointSnake(0, 5));
         update();
     }
 
@@ -64,27 +67,35 @@ public class Snake {
         }
     }
 
-    public static void move() {
-        // Save the previous positions of all segments
-        PointSnake prevPosition = new PointSnake(points.get(0).getX(), points.get(0).getY());
-        PointSnake tempPosition;
+    public static void move(Bot bot, Update update) {
+        PointSnake head = points.get(0);
+        int newX = head.getX();
+        int newY = head.getY();
 
-        // Move the head
         switch (currentWay) {
-            case RIGHT -> points.get(0).setX(points.get(0).getX() + 1);
-            case LEFT -> points.get(0).setX(points.get(0).getX() - 1);
-            case TOP -> points.get(0).setY(points.get(0).getY() - 1);
-            case BOT -> points.get(0).setY(points.get(0).getY() + 1);
+            case RIGHT -> newX++;
+            case LEFT -> newX--;
+            case TOP -> newY--;
+            case BOT -> newY++;
         }
 
-        // Move the rest of the body
-        for (int i = 1; i < points.size(); i++) {
-            tempPosition = new PointSnake(points.get(i).getX(), points.get(i).getY());
-            points.get(i).setX(prevPosition.getX());
-            points.get(i).setY(prevPosition.getY());
-            prevPosition = tempPosition;
+        if (newX < 0 || newX >= 10 || newY < 0 || newY >= 10) {
+            bot.sendLose(update);
+            return;
         }
+
+        for (PointSnake point : points) {
+            if (point.getX() == newX && point.getY() == newY) {
+                bot.sendLose(update);
+                return;
+            }
+        }
+
+        points.add(0, new PointSnake(newX, newY));
+        points.remove(points.size() - 1);
 
         update();
     }
+
+
 }
