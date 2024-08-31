@@ -72,6 +72,7 @@ public class Bot extends TelegramLongPollingBot {
         String text = message.getText();
 
         if (!isAlive) {
+            Snake.init();  // Инициализация змейки перед началом игры
             move = new Move(this);
             move.start();
             isAlive = true;
